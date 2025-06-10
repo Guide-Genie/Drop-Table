@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>드랍 테이블 - 오피온의굴</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #1c1c1c;
+    color: #ddd;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  h1 {
+    color: #f0ad4e;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  #search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: #2c2c2c;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  .section {
+    background: rgba(50, 50, 50, 0.8);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  }
+  .section h2 {
+    color: #ffa500;
+    border-bottom: 1px solid #444;
+    margin-bottom: 10px;
+  }
+  .monster {
+    margin-bottom: 10px;
+  }
+  .monster img {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .monster-name {
+    display: inline-block;
+    font-weight: bold;
+    color: #f5c842;
+  }
+  ul {
+    list-style: none;
+    padding-left: 80px;
+  }
+  ul li {
+    margin: 3px 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>오피온의굴 드랍 테이블</h1>
+  <input type="text" id="search" placeholder="몬스터명 또는 아이템명으로 검색" />
+  <div id="results"></div>
+</div>
+
+<script>
+const data = [
+  {
+    area: "브론즈오피온의굴 재물층 (6층~11층)",
+    monsters: [
+      { name: "마법스펙터", image: "images/magic_specter.png", drops: ["미스릴부츠", "레드자스퍼"] },
+      { name: "공격스펙터", image: "images/attack_specter.png", drops: ["젤리오팔"] },
+      { name: "데몬", image: "images/demon.png", drops: ["미스릴부츠", "데몬턱뼈"] },
+      { name: "다크틸", image: "images/darktil.png", drops: ["다크틸지팡이", "유물반지"] },
+      { name: "다크틸블러드", image: "images/darktil_blood.png", drops: ["유물반지"] },
+      { name: "카벙클", image: "images/carbuncle.png", drops: ["생명의구슬"] },
+      { name: "데스나이트", image: "images/deathknight.png", drops: ["데스투구"] },
+      { name: "포보스", image: "images/phobos.png", drops: ["드라코의눈"] },
+      { name: "바룬스", image: "images/varuns.png", drops: ["꿈의바다"] }
+    ]
+  },
+  {
+    area: "브론즈오피온의굴 파워층 (16층~20층)",
+    monsters: [
+      { name: "베레스", image: "images/beres.png", drops: ["용각반", "베레스발톱"] },
+      { name: "브론즈오피온 1두", image: "images/bronze_opheon_1.png", drops: ["배틀부츠"] },
+      { name: "초록색데몬", image: "images/green_demon.png", drops: ["워리어워커"] },
+      { name: "안크본드라곤", image: "images/ankbondragon.png", drops: ["파워리스트"] }
+    ]
+  },
+  // 👉 나머지 던전 데이터도 같은 형식으로 data 배열에 추가
+];
+
+const searchInput = document.getElementById("search");
+const resultsDiv = document.getElementById("results");
+
+function displayData(dataSet) {
+  resultsDiv.innerHTML = "";
+  dataSet.forEach(section => {
+    const sectionDiv = document.createElement("div");
+    sectionDiv.classList.add("section");
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.textContent = section.area;
+    sectionDiv.appendChild(sectionTitle);
+
+    section.monsters.forEach(monster => {
+      const monsterDiv = document.createElement("div");
+      monsterDiv.classList.add("monster");
+      monsterDiv.innerHTML = `
+        <img src="${monster.image}" alt="${monster.name}">
+        <span class="monster-name">${monster.name}</span>
+        <ul>${monster.drops.map(item => `<li>${item}</li>`).join("")}</ul>
+      `;
+      sectionDiv.appendChild(monsterDiv);
+    });
+
+    resultsDiv.appendChild(sectionDiv);
+  });
+}
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  if (query === "") {
+    displayData(data);
+    return;
+  }
+
+  const filteredData = data.map(section => {
+    const filteredMonsters = section.monsters.filter(m =>
+      m.name.toLowerCase().includes(query) ||
+      m.drops.some(drop => drop.toLowerCase().includes(query))
+    );
+    return { ...section, monsters: filteredMonsters };
+  }).filter(section => section.monsters.length > 0);
+
+  displayData(filteredData);
+});
+
+// 처음에 전체 표시
+displayData(data);
+</script>
+</body>
+</html>
